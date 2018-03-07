@@ -65,7 +65,59 @@
                     </a>
                     <ul class="nav nav-sub nav-stacked">
                         <li>
-                            <a href="{{ url("course") }}">Courses</a>
+                            <a href="javascript:;">
+                                <span class="nav-title">School Management</span>
+                                <span class="nav-tools">
+                          <i class="fa fa-fw arrow"></i>
+                        </span>
+                            </a>
+                            <ul class="nav nav-sub">
+                                <li>
+                                    <a href="{{ url("school") }}">
+                                        <span class="nav-title">School </span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ url("majors") }}">
+                                        <span class="nav-title">Majors </span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ url("grade") }}">
+                                        <span class="nav-title">Grade </span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ url("student") }}">
+                                        <span class="nav-title">Student </span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="javascript:;">
+                                <span class="nav-title">Course Management</span>
+                                <span class="nav-tools">
+                          <i class="fa fa-fw arrow"></i>
+                        </span>
+                            </a>
+                            <ul class="nav nav-sub">
+                                <li>
+                                    <a href="{{ url("subject") }}">
+                                        <span class="nav-title">Subject </span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ url("classroom") }}">
+                                        <span class="nav-title">Class Room</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ url("course") }}">
+                                        <span class="nav-title">Course </span>
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
                         <li>
                             <a href="{{ url("exams") }}">Exams</a>
@@ -76,7 +128,7 @@
                     </ul>
                 </li>
                 <!-- END: forms -->
-
+                {% if auth.getIdentity()['profile'] == "Administrators" %}
                 <!-- BEGIN: apps -->
                 <li>
                     <a href="javascript:;">
@@ -111,6 +163,9 @@
                     </span>
                     </a>
                     <ul class="nav nav-sub nav-stacked">
+                        <li>
+                            <a href="{{ url("announcements") }}">Announcements</a>
+                        </li>
                         <li>
                             <a href="javascript:;">
                                 <span class="nav-title">Blog</span>
@@ -214,6 +269,7 @@
                       <i class="fa fa-fw arrow"></i>
                     </span>
                     </a>
+                    {## 
                     {% if widget.addonmenu() is not empty %}
                     <ul class="nav nav-sub">
                         {% for item in widget.addonmenu() %}
@@ -226,7 +282,9 @@
                         <li></li>
                     </ul>
                     {% endif %}
+                    ##}
                 </li>
+                {% endif %}
             </ul>
             <!-- END: nav-content -->
         </nav>

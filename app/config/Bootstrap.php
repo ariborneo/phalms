@@ -40,10 +40,16 @@ class Bootstrap
          * Include Autoloader
          */
         $application = new Application($di);
-        $arr_modules = include APP_PATH . '/config/modules.php';
-        $modules = $this->modulesConfig($arr_modules);
+        //$arr_modules = include APP_PATH . '/config/modules.php';
+        $modules = $this->modulesConfig();
         $application->registerModules($modules);
         echo $application->handle()->getContent();
+    }
+
+    public function arrModules()
+    {
+        $arr_modules = include APP_PATH . '/config/modules.php';
+        return $arr_modules;
     }
 
 
@@ -65,6 +71,16 @@ class Bootstrap
             'Plugins'            => $config->application->pluginDir,
             
         ]);
+
+        //force failed load class
+        $loader->registerClasses([
+                "Modules\Banner\Models\Banner"      => $config->application->modulesDir."banner/models/Banner.php",
+                "Modules\Cms\Models\Blog"           => $config->application->modulesDir."cms/models/Blog.php",
+                "Modules\Cms\Models\PageCategory"   => $config->application->modulesDir."cms/models/PageCategory.php",
+                "Modules\Gallery\Models\Image"      => $config->application->modulesDir."gallery/models/Image.php",
+                "Modules\Menu\Models\Menu"          => $config->application->modulesDir."menu/models/Menu.php",
+                "Modules\Modules\Models\Modules"    => $config->application->modulesDir."modules/models/Modules.php",
+            ]);
 
         $loader->register();
         return $loader;
@@ -172,8 +188,8 @@ class Bootstrap
     {
         $config = include APP_PATH . '/config/config.php';
 
-        if (is_readable(APP_PATH . '/config/config.dev.php')) {
-            $override = include APP_PATH . '/config/config.dev.php';
+        if (is_readable(APP_PATH . '/config/config.db.php')) {
+            $override = include APP_PATH . '/config/config.db.php';
             $config->merge($override);
         }
 
@@ -215,7 +231,7 @@ class Bootstrap
 
     public function dataBase($config)
     {
-        if($config->database->adapter == 'PgSql'){
+        if($config->database->adapter == 'Postgresql'){
             return new DbPgsqlAdapter([
                 'host' => $config->database->host,
                 'username' => $config->database->username,
@@ -265,11 +281,15 @@ class Bootstrap
 
     public function aclResorces()
     {
-        $pr = [];
-        if (is_readable(APP_PATH . '/config/privateResources.php')) {
-            $pr = include APP_PATH . '/config/privateResources.php';
-        }
-        return $pr;
+        $resource = include APP_PATH . '/config/privateResources.php';
+        $modules_list = $this->arrModules();
+            foreach ($modules_list as $module) {
+                if(file_exists(BASE_PATH . '/modules/' . $module . '/privateResources.php')){
+                    $module_resource = include BASE_PATH . '/modules/' . $module . '/privateResources.php';
+                    $resource->merge($module_resource);
+                }
+            }
+        return $resource;
     }
 
     public function acl($di)
@@ -295,8 +315,9 @@ class Bootstrap
         return $logger;
     }
 
-    public function modulesConfig($modules_list)
+    public function modulesConfig()
     {
+        $modules_list = $this->arrModules();
         $modules = array();
 
         if (!empty($modules_list)) {
